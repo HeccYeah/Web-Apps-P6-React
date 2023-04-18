@@ -1,0 +1,75 @@
+﻿@model Project5.Models.User
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<head>
+    <title>Admin Tools</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="\css\site.css">
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <button id="logout" class="button-admin">Logout</button>
+
+    <script>
+        $("#logout").click(function () {
+            document.location = "../../Identity/Account/Logout";
+        });
+    </script>
+
+    <h1>Edit</h1>
+
+        <br />
+
+    <h4>User</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <label asp-for="s_id" class="control-label"></label>
+                    <input asp-for="s_id" class="form-control" />
+                    <span asp-validation-for="s_id" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="first_name" class="control-label"></label>
+                    <input asp-for="first_name" class="form-control" />
+                    <span asp-validation-for="first_name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="last_name" class="control-label"></label>
+                    <input asp-for="last_name" class="form-control" />
+                    <span asp-validation-for="last_name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="savior_name" class="control-label"></label>
+                    <input asp-for="savior_name" class="form-control" />
+                    <span asp-validation-for="savior_name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="webId" class="control-label"></label>
+                    <input asp-for="webId" class="form-control" />
+                    <span asp-validation-for="webId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</body>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
