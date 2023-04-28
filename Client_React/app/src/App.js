@@ -1,25 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
+import Banner from './Components/Banner';
+import Catalog from './Components/Catalog';
+import ClassTable from './Components/ClassTable';
+import LowerLeft from './Components/LowerLeft';
+import Acordian from './Components/Acordian';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Banner></Banner>
+      <div id="upper" class = "row">
+        <Acordian></Acordian>
+        <Catalog></Catalog>
+      </div>
+      <div id="lower" class = "row">
+        <LowerLeft></LowerLeft>
+        <ClassTable></ClassTable>
+      </div>
+    </>
+  )
 }
 
 export default App;
