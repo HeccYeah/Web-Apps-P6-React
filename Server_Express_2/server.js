@@ -31,7 +31,6 @@ const { schema } = mongoose;
 app.get("/users/:id", async (req, res) => {
     try {
         // Connect the client to the server
-        await client.connect();
         let collection = db.collection("user");
         let userId = req.params.id;
 
@@ -39,7 +38,7 @@ app.get("/users/:id", async (req, res) => {
         let dataComb = await collection.aggregate([
             {
                 $match: {
-                    s_id: req.params.id
+                    s_id: userId
                 },
             },
 
@@ -146,12 +145,119 @@ app.get("/users/:id", async (req, res) => {
         console.error(err);
         res.status(500).send('Error retrieving data from MongoDB');
     }
-  });
+});
 
-  const port = 3001;
+// insert a new year for a plan into the database
+app.post("/plan_year", async (req, res) => {
+    let newYear = {
+        p_id: req.body.p_id,
+        year: req.body.year,
+    };
 
-  app.listen(port, () => {
+    let collection = db.collection("plan_year");
+
+    collection.insertOne(newYear, function(err, res) {
+        assert.equal(null, err);
+        res.send("Success");
+    });
+});
+
+// delete a year from a plan in the database
+app.delete("/plan_year/:p_id/:year", async (req, res) => {
+    let query = {
+        p_id: req.params.p_id,
+        year: req.params.year
+    };
+
+    let collection = db.collection("plan_year");
+
+    collection.deleteOne(query, function(err, res) {
+        assert.equal(null, err);
+        res.send("Delete success");
+    });
+});
+
+// insert a new note for a plan into the database
+app.post("/note", async (req, res) => {
+    let newNote = {
+        n_id: req.body.n_id,
+        p_id: req.body.p_id,
+        creatorID: req.body.creatorID,
+        note: req.body.note
+    };
+
+    let collection = db.collection("note");
+
+    collection.insertOne(newNote, function(err, res) {
+        assert.equal(null, err);
+        res.send("Success");
+    });
+});
+
+// delete a note from a plan in the database
+app.delete("/note/:n_id", async (req, res) => {
+    let query = {
+        n_id: req.params.n_id,
+    };
+
+    let collection = db.collection("note");
+
+    collection.deleteOne(query, function(err, res) {
+        assert.equal(null, err);
+        res.send("Delete success");
+    });
+});
+
+// insert a new course for a plan into the database
+app.post("/has_course", async (req, res) => {
+    let newNote = {
+        p_id: req.body.p_id,
+        c_id: req.body.c_id,
+        sem: req.body.sem,
+        year: req.body.year,
+        cschool_year: req.body.school_year,
+    };
+
+    let collection = db.collection("note");
+
+    collection.insertOne(newNote, function(err, res) {
+        assert.equal(null, err);
+        res.send("Success");
+    });
+});
+
+// delete a a course for a plan in the database
+app.delete("/has_course/:_id", async (req, res) => {
+    let query = {
+        _id: req.params._id
+    };
+
+    let collection = db.collection("has_course");
+
+    collection.deleteOne(query, function(err, res) {
+        assert.equal(null, err);
+        res.send("Delete success");
+    });
+});
+
+app.put("/has_course/:_id", async (req, res) => {
+    const filter = {
+        _id: req.body._id
+    }
+    const update = { $set: req.body };
+
+    let collection = db.collection("has_course");
+
+    collection.updateOne(filter, update, function(err, res) {
+        assert.equal(null, err);
+        res.send("Update Success");
+    });
+});
+
+const port = 3001;
+
+app.listen(port, () => {
     console.log("server running");
-  });
+});
 
   
