@@ -1,12 +1,19 @@
-var mysql = require('mysql');
+var { MongoClient, ServerApiVersion } = require('mongodb');
 var md5 = require('md5');
 
-var db = mysql.createConnection({
-    host: "james.cedarville.edu",
-    database: "cs3220_sp23",
-    user: "cs3220_sp23",
-    password: "E57y6Z1FwAlraEmA"
+const uri = "mongodb+srv://mad_project6:Sywabz8RC8foU4jw@project6.zspxevg.mongodb.net/APE?retryWrites=true&w=majority";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 });
+await client.connect();
+        let db = client.db();
+
 
 db.connect(function(err){
     if(err) throw err;
