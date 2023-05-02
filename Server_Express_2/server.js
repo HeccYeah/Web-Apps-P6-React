@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const mongodb = require('mongodb');
 const cors = require("cors");
 //const models = require("./models.js");
 
@@ -26,7 +27,7 @@ const client = new MongoClient(uri, {
 client.connect();
 let db = client.db();
 
-const { schema } = mongoose;
+//const { schema } = mongoose;
 
 app.get("/users/:id", async (req, res) => {
     try {
@@ -125,17 +126,6 @@ app.get("/users/:id", async (req, res) => {
         ])
 
         let data = await dataComb.toArray();
-
-        /*
-        let data = await models.User.findOne({s_id: userId})
-            .populate({
-                path: "plans",
-                match: {owner_id: { $eq: "$s_id"}},
-                model: models.Plan,
-            })
-            .exec();
-        console.log(3);
-        */
     
         res.setHeader("Content-Type", "application/json")
         res.send(JSON.stringify(data));
@@ -156,7 +146,7 @@ app.post("/plan_year", async (req, res) => {
 
     let collection = db.collection("plan_year");
 
-    collection.insertOne(newYear, function(err, res) {
+    collection.insertOne(newYear, function(err, result) {
         assert.equal(null, err);
         res.send("Success");
     });
@@ -171,7 +161,7 @@ app.delete("/plan_year/:p_id/:year", async (req, res) => {
 
     let collection = db.collection("plan_year");
 
-    collection.deleteOne(query, function(err, res) {
+    collection.deleteOne(query, function(err, result) {
         assert.equal(null, err);
         res.send("Delete success");
     });
@@ -188,7 +178,7 @@ app.post("/note", async (req, res) => {
 
     let collection = db.collection("note");
 
-    collection.insertOne(newNote, function(err, res) {
+    collection.insertOne(newNote, function(err, result) {
         assert.equal(null, err);
         res.send("Success");
     });
@@ -202,7 +192,7 @@ app.delete("/note/:n_id", async (req, res) => {
 
     let collection = db.collection("note");
 
-    collection.deleteOne(query, function(err, res) {
+    collection.deleteOne(query, function(err, result) {
         assert.equal(null, err);
         res.send("Delete success");
     });
@@ -210,45 +200,59 @@ app.delete("/note/:n_id", async (req, res) => {
 
 // insert a new course for a plan into the database
 app.post("/has_course", async (req, res) => {
-    let newNote = {
-        p_id: req.body.p_id,
-        c_id: req.body.c_id,
-        sem: req.body.sem,
-        year: req.body.year,
-        cschool_year: req.body.school_year,
-    };
+    try {
+        let newNote = {
+            p_id: req.body.p_id,
+            c_id: req.body.c_id,
+            sem: req.body.sem,
+            year: req.body.year,
+            school_year: req.body.school_year,
+        };
 
-    let collection = db.collection("note");
+        let collection = db.collection("has_course");
 
-    collection.insertOne(newNote, function(err, res) {
-        assert.equal(null, err);
-        res.send("Success");
-    });
+        const result = await collection.insertOne(newNote);
+        res.send(result.insertedId);
+    } catch (err) {
+        console.error('Error inserting document:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // delete a a course for a plan in the database
 app.delete("/has_course/:_id", async (req, res) => {
+    let idObj = new mongodb.ObjectId(req.params._id);
+
     let query = {
-        _id: req.params._id
+        _id: idObj
     };
 
     let collection = db.collection("has_course");
 
-    collection.deleteOne(query, function(err, res) {
+    collection.deleteOne(query, function(err, result) {
         assert.equal(null, err);
         res.send("Delete success");
     });
 });
 
 app.put("/has_course/:_id", async (req, res) => {
+    let idObj = new mongodb.ObjectId(req.params._id);
+
     const filter = {
-        _id: req.body._id
+        _id: idObj
     }
-    const update = { $set: req.body };
+
+    let update = {};
+
+    for (let key in req.body) {
+        if (req.body.hasOwnProperty(key)) {
+            update[key] = req.body[key];
+        }
+    }
 
     let collection = db.collection("has_course");
 
-    collection.updateOne(filter, update, function(err, res) {
+    collection.updateOne(filter, { $set: update }, function(err, result) {
         assert.equal(null, err);
         res.send("Update Success");
     });

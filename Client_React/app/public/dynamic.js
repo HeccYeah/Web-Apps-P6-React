@@ -526,8 +526,7 @@ async function getData()
                             method: "DELETE",
                         };
 
-                        //TODO: update database with changes
-                        //fetch("/api/hascourse/" + refNum, requestOptions);
+                        fetch("http://localhost:3001/has_course/" + refNum, requestOptions);
 
                         // restructure js objects
                         plans[planSelector.value].makeYears(); // reconstruct back-end data
@@ -563,6 +562,7 @@ async function getData()
                     let termInfo = termName[0].innerText.split(" ");
                     let sem = termInfo[0];
                     let year = termInfo[1];
+                    let school_year = (sem == "Fall" ? year : year - 1) + "";
 
                     let refNum = ui.draggable[0].dataset.hasCourseId;
                     if (refNum != undefined) {
@@ -571,16 +571,12 @@ async function getData()
                         currCourse.semester = sem;
                         currCourse.year = year;
                         plans[planSelector.value].makeYears(); // reconstruct back-end data
-                        planPop(); // Probably a more efficient way to do this, but it should work
-
 
                         // update remote data
                         let updatedHasCourse = {
-                            Id: refNum,
-                            plan: {}, // Won't be used
-                            course: {}, // Won't be used
                             sem: sem,
-                            year: year
+                            year: year,
+                            school_year: school_year,
                         };
                         let jsonUpdatedHasCourse = JSON.stringify(updatedHasCourse);
 
@@ -592,19 +588,21 @@ async function getData()
                             }
                         };
 
-                        //fetch("/api/hascourse/" + refNum, requestOptions)
+                        fetch("http://localhost:3001/has_course/" + refNum, requestOptions);
+                        planPop(); // Probably a more efficient way to do this, but it should work
                     }
                     else
                     {
                         // add to database
                         let cData = classDropped.split(" ");
                         let currPlanObj = planList.find(p => p.p_id == planSelector.value);
-                        let currCourseObj = courseList.find(c => c.c_id == cData[0]);
+                        let currCourseObj = catalogObj.find(c => c.c_id == cData[0]);
                         let newHasCourse = {
-                            planId: currPlanObj.p_id,
-                            courseId: currCourseObj.c_id,
+                            p_id: currPlanObj.p_id,
+                            c_id: currCourseObj.c_id,
                             sem: sem,
                             year: year,
+                            school_year: school_year,
                         }
 
                         let jsonNewHasCourse = JSON.stringify(newHasCourse);
@@ -617,17 +615,25 @@ async function getData()
                             }
                         }
 
-                        /*fetch("/api/hascourse/", requestOptions)
-                            .then(res => res.json())
+                        fetch("http://localhost:3001/has_course/", requestOptions)
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json(); // this returns a promise
+                                } else {
+                                    throw new Error('Error inserting document into database.');
+                                }
+                            })
                             .then(data => {
                                 // Update local values
-                                let newCourseID = data.id;
-                                let newCourseCred = data.num_cred
-                                plans[planSelector.value].courses.push(new Course(cData[0], currCourseObj.name, year, sem, currCourseObj.credit_hours, newCourseID));
+                                let newCourseID = data;
+                                plans[planSelector.value].courses.push(new Course(cData[0], currCourseObj.course_name, year, sem, parseInt(currCourseObj.credit_hours), newCourseID));
                                 plans[planSelector.value].makeYears(); // reconstruct back-end data
                                 planPop(); // Probably a more efficient way to do this, but it should work
                                 polka();
-                            });*/
+                            })
+                            .catch(error => {
+                                console.error('Error inserting document into database:', error);
+                            });
 
                     }
                 }
@@ -637,5 +643,5 @@ async function getData()
 }
 
 getData();
-//export default getData;
+
 
