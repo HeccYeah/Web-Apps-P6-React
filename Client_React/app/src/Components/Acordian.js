@@ -1,6 +1,6 @@
 function Acordian() {
     return (
-        <div id="reqs" class="quadrant">
+        <div id="reqs" className="quadrant">
             <div id="accordion">
             </div>
         </div>

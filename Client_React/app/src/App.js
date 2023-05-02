@@ -10,12 +10,12 @@ function App() {
   return (
     <>
       <Banner></Banner>
-      <div id="upper" class = "row">
+      <div id="upper" className = "row">
         <Acordian></Acordian>
         <Notes></Notes>
         <Catalog></Catalog>
       </div>
-      <div id="lower" class = "row">
+      <div id="lower" className = "row">
         <LowerLeft></LowerLeft>
         <ClassTable></ClassTable>
       </div>
@@ -23,6 +23,7 @@ function App() {
   )
 }
 
+/*
 // get data
 let id = '1';
 
@@ -35,5 +36,6 @@ fetch(`http://localhost:3001/users/${id}`)
     console.log(data)
   })
   .catch(err => console.error(err));
+  */
 
 export default App;

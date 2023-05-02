@@ -1,6 +1,6 @@
 function LowerLeft() {
     return (
-        <div id="links" class="quadrant">
+        <div id="links" className="quadrant">
         </div>
     )
 }

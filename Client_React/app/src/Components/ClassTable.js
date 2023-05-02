@@ -2,8 +2,8 @@ import Notes from './Notes';
 
 function ClassTable() {
     return (
-        <div id="finder" class="quadrant">
-            <table id="myTable" class="display">
+        <div id="finder" className="quadrant">
+            <table id="myTable" className="display">
                 <thead>
                     <tr>
                         <th>Class Code</th>
