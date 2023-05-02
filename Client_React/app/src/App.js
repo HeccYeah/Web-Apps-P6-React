@@ -23,19 +23,4 @@ function App() {
   )
 }
 
-/*
-// get data
-let id = '1';
-
-fetch(`http://localhost:3001/users/${id}`)
-  .then( res => {
-    console.log(res)
-    return res.json();
-  })
-  .then(data => {
-    console.log(data)
-  })
-  .catch(err => console.error(err));
-  */
-
 export default App;

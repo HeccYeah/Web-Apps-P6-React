@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 // Global variables
 let SEMS = ["Fall", "Spring", "Summer"];
 
@@ -600,11 +598,11 @@ async function getData()
                     {
                         // add to database
                         let cData = classDropped.split(" ");
-                        let currPlanObj = planList.find(p => p.id == planSelector.value);
+                        let currPlanObj = planList.find(p => p.p_id == planSelector.value);
                         let currCourseObj = courseList.find(c => c.c_id == cData[0]);
                         let newHasCourse = {
-                            planId: currPlanObj.id,
-                            courseId: currCourseObj.id,
+                            planId: currPlanObj.p_id,
+                            courseId: currCourseObj.c_id,
                             sem: sem,
                             year: year,
                         }
@@ -638,5 +636,6 @@ async function getData()
     }
 }
 
-export default getData;
+getData();
+//export default getData;
 

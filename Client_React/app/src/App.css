@@ -56,6 +56,20 @@ div > p {
   position: absolute;
   top: 1vh;
   right:3vw;
+  margin-top: -5px;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.termName {
+  margin-top: -10px;
+  margin-bottom: 8px;
+  font-size: 20px;
+ 
+}
+
+.satisfied, .unsatisfied {
+  display: inline;
 }
 
 #banner
@@ -81,6 +95,10 @@ button {
   border-color: #e9e7df;
   border-style: groove;
   border-radius: 5px;
+  height: 3.5vh;
+  width: 5vw;
+  font-size: 2.5vh;
+  font-weight: 600;
 }
 
 button:hover {
@@ -90,49 +108,49 @@ button:hover {
 #bannerStudent {
   font-size: 2vh;
   position: absolute;
-  right: 75vw;
+  left: 18vw;
   top: 0.5vh;
 }
 
 #bannerSavior {
   font-size: 2vh;
   position: absolute;
-  right: 65vw;
+  left: 35vw;
   top: 0.5vh;
 }
 
 #bannerCatYear {
   font-size: 2vh;
   position: absolute;
-  right: 50vw;
+  left: 50vw;
   top: 0.5vh;
 }
 
 #bannerTotCred {
   font-size: 2vh;
   position: absolute;
-  right: 35vw;
+  left: 65vw;
   top: 0.5vh;
 }
 
 #bannerMajor {
   font-size: 2vh;
   position: absolute;
-  right: 75vw;
+  left: 18vw;
   top: 2.5vh;
 }   
 
 #bannerMinor {
   font-size: 2vh;
   position: absolute;
-  right: 50vw;
+  left: 50vw;
   top: 2.5vh;
 }
 
 #logout {
   position: absolute;
   right: 5vw;
-  top: 1.4vh;
+  top: 1.2vh;
 }
 
 #upper
@@ -143,8 +161,8 @@ button:hover {
 }
 
 #lower {
-  top: 62%;
-  height: 38%;
+  top: 60%;
+  height: 40%;
   width: 100%;
 }
 
@@ -157,7 +175,6 @@ button:hover {
 #reqs {
   width: 18%;
   font-family: Trebuchet MS, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-  overflow: scroll;
 }
 
 #plan {
@@ -224,16 +241,22 @@ button:hover {
 
 #gridC li:hover {
   background-color: rgba(0,0,0,0.1);
+  cursor: pointer;
 }
 
-div li:hover{
+div li:hover {
   background-color: rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+tr:hover {
+  cursor: pointer;
 }
 
 #links {
   width: 18%;
   height: auto;
-  /*background-image: url('img/penquins-mary-poppins.gif');*/
+  background-image: url('../img/penquins-mary-poppins.gif');
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -300,7 +323,7 @@ div li:hover{
 
 /* Select options */
 
-#planSelector {
+#planSelector, #stuSelector {
   margin: 0.3vh 0.2vw;
   overflow: hidden;
   border: #1e1c23 1px solid;
@@ -310,7 +333,7 @@ div li:hover{
   box-shadow: inset 0px 0px 10px 1px #3E3C43;
 }
 
-#planSelector select {
+#planSelector select, #stuSelector select {
   background: transparent;
   font-size:0.7vh;
   color:#e9e7df;
@@ -319,23 +342,397 @@ div li:hover{
   /*-webkit-appearance: none;*/
 }
 
-#planSelector select:focus {
+#planSelector select:focus, #stuSelector select:focus {
   outline: none;
 }
 
-#planSelector {
+#planSelector, #stuSelector {
   box-sizing: border-box;
--webkit-box-sizing: border-box;
--moz-box-sizing: border-box;
-border: 1px solid #C2C2C2;
-box-shadow: 1px 1px 4px #EBEBEB;
--moz-box-shadow: 1px 1px 4px #EBEBEB;
--webkit-box-shadow: 1px 1px 4px #EBEBEB;
-border-radius: 3px;
--webkit-border-radius: 3px;
--moz-border-radius: 3px;
-padding: 7px;
-outline: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border: 1px solid #C2C2C2;
+  box-shadow: 1px 1px 4px #EBEBEB;
+  -moz-box-shadow: 1px 1px 4px #EBEBEB;
+  -webkit-box-shadow: 1px 1px 4px #EBEBEB;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  padding: 7px;
+  outline: none;
   background-image: linear-gradient(to bottom right, #44406d, #2d5c86);
   color: #e9e7df;
 }
+
+option {
+  background-color: #3E3C43 !important;
+}
+html{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100%;
+  background-image: linear-gradient(to bottom right, #1e1c23, #3E3C43);
+  color: #e9e7df;
+  
+  padding: 0px;
+  margin: 0px;
+}
+
+a {
+  color: #64608d;
+}
+
+a:hover {
+  color: #e9e7df;
+}
+
+h4 {
+  margin: 2px;
+  display: inline;
+}
+
+div > p {
+  font-size: medium;
+}
+
+.row {
+  position: fixed;
+  display: flex;
+  margin: 0px;
+  padding: 0px;
+}
+
+.quadrant {
+  border-color: #e9e7df;
+  border-radius: 10px;
+  border-width: 3px;
+  border-style:groove;
+  padding: 10px;
+  margin: 2px;
+  height: 94%;
+}
+
+.term {
+  position: relative;
+  right: 0vw; 
+}
+
+.termHours {
+  position: absolute;
+  top: 1vh;
+  right:3vw;
+  margin-top: -5px;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.termName {
+  margin-top: -10px;
+  margin-bottom: 8px;
+  font-size: 20px;
+ 
+}
+
+.satisfied, .unsatisfied {
+  display: inline;
+}
+
+#banner
+{
+  position: fixed;
+  height: 5%;
+  width: 100%;
+  font-family: Trebuchet MS, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 4vh;
+  text-shadow: 3px 3px 5px #3E3C43;
+  background-image: linear-gradient(to right, #64608d, #6d9cc6);
+  border-color: #88b2d2;
+  border-width: 0px 0px 4px 0px;
+  border-style:groove;
+  padding: 0px 20px;
+  margin: 0px;
+  top: 0;
+  left: 0;
+}
+
+button {
+  background-image: linear-gradient(to right, #64608d, #6d9cc6);
+  border-color: #e9e7df;
+  border-style: groove;
+  border-radius: 5px;
+  height: 3.5vh;
+  width: 5vw;
+  font-size: 2.5vh;
+  font-weight: 600;
+}
+
+button:hover {
+  background-image: linear-gradient(to bottom right, #44406d, #2d5c86);
+}
+
+#bannerStudent {
+  font-size: 2vh;
+  position: absolute;
+  left: 18vw;
+  top: 0.5vh;
+}
+
+#bannerSavior {
+  font-size: 2vh;
+  position: absolute;
+  left: 35vw;
+  top: 0.5vh;
+}
+
+#bannerCatYear {
+  font-size: 2vh;
+  position: absolute;
+  left: 50vw;
+  top: 0.5vh;
+}
+
+#bannerTotCred {
+  font-size: 2vh;
+  position: absolute;
+  left: 65vw;
+  top: 0.5vh;
+}
+
+#bannerMajor {
+  font-size: 2vh;
+  position: absolute;
+  left: 18vw;
+  top: 2.5vh;
+}   
+
+#bannerMinor {
+  font-size: 2vh;
+  position: absolute;
+  left: 50vw;
+  top: 2.5vh;
+}
+
+#logout {
+  position: absolute;
+  right: 5vw;
+  top: 1.2vh;
+}
+
+#upper
+{
+  top: 6%;
+  height: 55%;
+  width: 100%;
+}
+
+#lower {
+  top: 60%;
+  height: 40%;
+  width: 100%;
+}
+
+#finder {
+  width: 78%;
+  height: auto;
+  font-family: Trebuchet MS, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#reqs {
+  width: 18%;
+  font-family: Trebuchet MS, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#plan {
+  width: 78%;
+}
+
+#plan > h2 {
+  height: 5%;
+  text-shadow: 2px 2px 3px #3E3C43;
+  font-size: 2vh;
+  margin: 0.5vh 0vw;
+}
+
+#gridC {
+  width: 100%;
+  height: 94%;
+  gap: 5px;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: stretch;
+  align-content: stretch;
+  overflow: scroll;
+}
+
+#gridC > div {
+  text-shadow: 2px 2px 3px #3E3C43;
+  background-image: linear-gradient(to bottom right, #64608d, #4d7ca6);
+  border-color: #e9e7df;
+  padding: 1vw;
+  border-style: groove;
+  border-width: 3px;
+  border-radius: 5px;
+  font-size: 1.4vh;
+}
+
+#gridC > div.completed {
+  background-image: linear-gradient(to bottom right, #74708d, #638c90);
+}
+
+#gridC > div.inProgress {
+  background-image: linear-gradient(to bottom right, #4440ad, #2d5cc6);
+}
+
+#gridC > div:hover {
+  background-image: linear-gradient(to bottom right, #44406d, #2d5c86);
+}
+
+#gridC h3 {
+  font-size: 1.8vh;
+  margin: 0.5vh 0vw;
+}
+
+#gridC ul {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#gridC li {
+  border-style: solid;
+  border-width: 0vh 0vh 0.1vh 0vh;
+  border-color: #3E3C43;
+}
+
+#gridC li:hover {
+  background-color: rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+div li:hover {
+  background-color: rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+tr:hover {
+  cursor: pointer;
+}
+
+#links {
+  width: 18%;
+  height: auto;
+  background-image: url('../img/penquins-mary-poppins.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#links > div {
+  width: 95%;
+  border: 2px;
+  border-style: solid;
+  border-color: #44406d;
+  margin: 0.15vh 0.35vw;
+  height: 12%;
+  background-image: linear-gradient(to bottom right, #8480ad, #6d9cc6);
+}
+
+#links > div.judahLink {
+  text-align: center;
+  border-radius: 10px;
+  font-size: 1.3vh;
+}
+
+#links label{
+  margin-left: 0.3vw;
+  color: #1e1c23;
+  font-size: 2vh;
+  font-family: Trebuchet MS, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#links a {
+  color: #1e1c23;
+  font-size: 2vh;
+  font-family: Trebuchet MS, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#links a:hover {
+  color: #e9e7df;
+}
+
+.form-group {
+  display: grid;
+  grid-template-columns: 6.5vh auto;
+  justify-content: stretch;
+  align-content: stretch;
+}
+
+/* Scrollbar asthetics */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #44406d;
+  border-radius: 10px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Select options */
+
+#planSelector, #stuSelector {
+  margin: 0.3vh 0.2vw;
+  overflow: hidden;
+  border: #1e1c23 1px solid;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0px 0px 10px 1px #3E3C43;
+  box-shadow: inset 0px 0px 10px 1px #3E3C43;
+}
+
+#planSelector select, #stuSelector select {
+  background: transparent;
+  font-size:0.7vh;
+  color:#e9e7df;
+  border: 0;
+  border-radius: 0;
+  /*-webkit-appearance: none;*/
+}
+
+#planSelector select:focus, #stuSelector select:focus {
+  outline: none;
+}
+
+#planSelector, #stuSelector {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border: 1px solid #C2C2C2;
+  box-shadow: 1px 1px 4px #EBEBEB;
+  -moz-box-shadow: 1px 1px 4px #EBEBEB;
+  -webkit-box-shadow: 1px 1px 4px #EBEBEB;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  padding: 7px;
+  outline: none;
+  background-image: linear-gradient(to bottom right, #44406d, #2d5c86);
+  color: #e9e7df;
+}
+
+option {
+  background-color: #3E3C43 !important;
+}
+
+
