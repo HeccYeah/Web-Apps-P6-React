@@ -11,7 +11,6 @@ function Student () {
             <Banner></Banner>
             <div id="upper" className = "row">
                 <Acordian></Acordian>
-                <Notes></Notes>
                 <Catalog></Catalog>
             </div>
             <div id="lower" className = "row">
