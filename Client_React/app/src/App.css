@@ -179,6 +179,7 @@ button:hover {
 
 #plan {
   width: 78%;
+  overflow: scroll;
 }
 
 #plan > h2 {

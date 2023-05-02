@@ -11,7 +11,7 @@ class Plan
         this.courses = courses;
     }
 
-    makeYears()
+    makeYears(yearArray)
     {
         // give object years attribute
         this.years = new Array();
@@ -44,26 +44,63 @@ class Plan
         {
             termList.push(new Term(prevYear, prevSem, courseList));
         }
-
-        // Put terms into years
-        let yearTerms = new Array();
-        prevYear = -6000;
-        termList.forEach(trm => {
-            // combine terms of same year together
-            let schlYr = getSchoolYear(trm.year, trm.semester);
-            if (schlYr != prevYear && yearTerms.length > 0)
-            {
-                // split off years
-                this.years.push(new SchoolYear(prevYear, yearTerms));
-                yearTerms = new Array();
-            }
-            yearTerms.push(trm);
-            prevYear = schlYr;
-        });
-        // Final check for last year
-        if (yearTerms.length > 0)
+        if (yearArray == undefined)
         {
-            this.years.push(new SchoolYear(prevYear, yearTerms));
+            // Put terms into years
+            let yearTerms = new Array();
+            prevYear = -6000;
+            termList.forEach(trm => {
+                // combine terms of same year together
+                let schlYr = getSchoolYear(trm.year, trm.semester);
+                if (schlYr != prevYear && yearTerms.length > 0)
+                {
+                    // split off years
+                    this.years.push(new SchoolYear(prevYear, yearTerms));
+                    yearTerms = new Array();
+                }
+                yearTerms.push(trm);
+                prevYear = schlYr;
+            });
+            // Final check for last year
+            if (yearTerms.length > 0)
+            {
+                this.years.push(new SchoolYear(prevYear, yearTerms));
+            }
+        }
+        else
+        {
+            // Put terms into years
+            let yearTerms = new Array();
+            prevYear = -6000;
+            termList.forEach(trm => {
+                // combine terms of same year together
+                let schlYr = getSchoolYear(trm.year, trm.semester);
+                if (schlYr != prevYear && yearTerms.length > 0)
+                {
+                    // split off years
+                    if (yearArray.find(yr => parseInt(yr) == prevYear) != undefined)
+                    {
+                        this.years.push(new SchoolYear(prevYear, yearTerms));
+                    }
+                    yearTerms = new Array();
+                }
+                yearTerms.push(trm);
+                prevYear = schlYr;
+            });
+            // Final check for last year
+            if (yearTerms.length > 0)
+            {
+                if (yearArray.find(yr => parseInt(yr) == prevYear) != undefined)
+                {
+                    this.years.push(new SchoolYear(parseInt(prevYear), yearTerms));
+                }
+            }
+            yearArray.forEach(yr => {
+                if (this.years.find(sy => sy.startYear == parseInt(yr)) == undefined)
+                {
+                    this.years.push(new SchoolYear(parseInt(yr), []));
+                }
+            });
         }
     }
 }
@@ -160,6 +197,13 @@ async function getData()
     let minorsList = programsList.filter(p => p.is_minor == "1");
 
     let planList = respObj.plans;
+
+    let yearList = respObj.plan_years;
+    let planYears = new Array();
+    yearList.forEach(yr => {
+        planYears.push(yr.year);
+    });
+    planYears = planYears.sort((a, b) => a - b);
 
     let reqList = new Array();
     respObj.reqs.forEach(r => {
@@ -282,7 +326,7 @@ async function getData()
         myPlan.name = planData.p_name;
 
         // reorganize plan object
-        myPlan.makeYears();
+        myPlan.makeYears(planYears);
 
         // store plan for later
         plans[parseInt(planData.p_id)] = myPlan;
@@ -363,6 +407,74 @@ async function getData()
             credNum += crs.numCredits;
         });
         bannerTotCred.innerText = "Total Credits: " + credNum.toFixed(2); 
+
+        // ADD buttons to add and drop years
+        let addYearButt = document.createElement("button");
+        addYearButt.textContent = "Add Year";
+        addYearButt.addEventListener("click", () => {
+            let p_id = planSelector.value;
+            let lastYear = planYears[planYears.length - 1];
+            let newYear = parseInt(lastYear) + 1;
+
+            let newPlanYear = {
+                p_id: p_id,
+                year: newYear + ""
+            }
+
+            let jsonNewPlanYear = JSON.stringify(newPlanYear);
+
+            let requestOptions = {
+                method: "POST",
+                body: jsonNewPlanYear,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+
+            fetch("http://localhost:3001/plan_year/", requestOptions)
+
+            planYears.push(newYear + "");
+
+            plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+            planPop(); // Probably a more efficient way to do this, but it should work
+
+        });
+        gridElem.appendChild(addYearButt);
+
+        let delYearButt = document.createElement("button");
+        delYearButt.textContent = "Delete Year";
+        delYearButt.addEventListener("click", () => {
+            let p_id = planSelector.value;
+            let lastYear = planYears.pop();
+
+            // delete all courses in the year
+            let currPlan = plans[p_id];
+            currPlan.years[currPlan.years.length - 1].terms.forEach(trm => {
+                trm.courses.forEach(crs => {
+                    let refNum = crs.hasCourseId;
+
+                    // update the database
+                    let requestOptions = {
+                        method: "DELETE",
+                    };
+
+                    fetch("http://localhost:3001/has_course/" + refNum, requestOptions);
+
+                    currPlan.courses = currPlan.courses.filter(crs => crs.hasCourseId != refNum);
+                })
+            });
+
+            // delete plan_year
+            let requestOptions = {
+                method: "DELETE",
+            };
+
+            fetch("http://localhost:3001/plan_year/" + p_id + "/" + lastYear, requestOptions)
+
+            plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+            planPop(); // Probably a more efficient way to do this, but it should work
+        });
+        gridElem.appendChild(delYearButt);
 
         // refresh drag and drop
         refreshDAD();
@@ -529,7 +641,7 @@ async function getData()
                         fetch("http://localhost:3001/has_course/" + refNum, requestOptions);
 
                         // restructure js objects
-                        plans[planSelector.value].makeYears(); // reconstruct back-end data
+                        plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
                         planPop(); // Probably a more efficient way to do this, but it should work
                         polka();
                     }
@@ -570,7 +682,7 @@ async function getData()
                         let currCourse = plans[planSelector.value].courses.find(crs => crs.hasCourseId == refNum);
                         currCourse.semester = sem;
                         currCourse.year = year;
-                        plans[planSelector.value].makeYears(); // reconstruct back-end data
+                        plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
 
                         // update remote data
                         let updatedHasCourse = {
@@ -627,7 +739,7 @@ async function getData()
                                 // Update local values
                                 let newCourseID = data;
                                 plans[planSelector.value].courses.push(new Course(cData[0], currCourseObj.course_name, year, sem, parseInt(currCourseObj.credit_hours), newCourseID));
-                                plans[planSelector.value].makeYears(); // reconstruct back-end data
+                                plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
                                 planPop(); // Probably a more efficient way to do this, but it should work
                                 polka();
                             })

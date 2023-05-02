@@ -4,7 +4,7 @@ import Catalog from './Components/Catalog';
 import ClassTable from './Components/ClassTable';
 import LowerLeft from './Components/LowerLeft';
 import Acordian from './Components/Acordian';
-import Notes from './Components/Notes';
+
 
 function App() {
   return (
@@ -12,7 +12,6 @@ function App() {
       <Banner></Banner>
       <div id="upper" className = "row">
         <Acordian></Acordian>
-        <Notes></Notes>
         <Catalog></Catalog>
       </div>
       <div id="lower" className = "row">
