@@ -4,13 +4,15 @@ const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const mongodb = require('mongodb');
 const cors = require("cors");
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 //const models = require("./models.js");
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use(cookieParser());
 
 
 const uri = "mongodb+srv://mad_project6:Sywabz8RC8foU4jw@project6.zspxevg.mongodb.net/APE?retryWrites=true&w=majority";
@@ -257,6 +259,27 @@ app.put("/has_course/:_id", async (req, res) => {
         res.send("Update Success");
     });
 });
+
+//Validate login credentials
+app.post("/login", async (req, res) => {
+    //Get the user collection
+    let users = db.collection("user");
+
+    //Get the username and password from login form
+    let username = req.body.username;
+    let pass = req.body.pass;
+
+    //Hash password to compare to database
+    let hashPass = bcrypt.hash(pass);
+    //This handles changes between the hashes the php script in proj4 made
+    //and the hashes this bcrypt library makes
+    hashPass = hashPass.replace("$2a$", "$2y$");
+
+    //Query database to authenticate
+    let user = users.findOne({ username: username});
+    //suser.
+
+})
 
 const port = 3001;
 

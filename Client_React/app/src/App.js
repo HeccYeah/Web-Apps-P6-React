@@ -1,25 +1,33 @@
 import './App.css';
-import Banner from './Components/Banner';
-import Catalog from './Components/Catalog';
-import ClassTable from './Components/ClassTable';
-import LowerLeft from './Components/LowerLeft';
-import Acordian from './Components/Acordian';
-
+import Student from './Components/Student';
+import Login from './Components/Login';
+import CreateUser from './Components/CreateUser';
+import { BrowserRouter as Router, Routes, Route, Navigate}
+    from 'react-router-dom';
 
 function App() {
+  //Set isAuthenticated based on api call
+  const isAuthenticated = false;
   return (
     <>
-      <Banner></Banner>
-      <div id="upper" className = "row">
-        <Acordian></Acordian>
-        <Catalog></Catalog>
-      </div>
-      <div id="lower" className = "row">
-        <LowerLeft></LowerLeft>
-        <ClassTable></ClassTable>
-      </div>
+      <Router>
+        <Routes>
+          <Route exact path='/' element={<AuthWrapper isAuthenticated={isAuthenticated} />}></Route>
+          <Route path='/login' element={<Login />}></Route>
+          <Route path='/create' element={<CreateUser />}></Route>
+          <Route path='/student' element={<Student />}></Route>
+        </Routes>
+      </Router>
     </>
   )
 }
+
+const AuthWrapper = ({isAuthenticated}) => {
+  return isAuthenticated ? (
+    <Navigate to="/student" replace />
+  ) : (
+    <Navigate to="/login" replace />
+  );
+};
 
 export default App;
