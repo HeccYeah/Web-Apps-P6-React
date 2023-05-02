@@ -1,3 +1,5 @@
+import Notes from './Notes';
+
 function ClassTable() {
     return (
         <div id="finder" class="quadrant">
@@ -10,7 +12,9 @@ function ClassTable() {
                         <th>Credits</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                    
+                </tbody>
             </table>
         </div>
     )
