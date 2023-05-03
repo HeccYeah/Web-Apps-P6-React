@@ -6,10 +6,10 @@ const mongodb = require('mongodb');
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-//const models = require("./models.js");
 
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -126,6 +126,52 @@ app.get("/users/:id", async (req, res) => {
                 }
             },
         ])
+
+        let data = await dataComb.toArray();
+    
+        res.setHeader("Content-Type", "application/json")
+        res.send(JSON.stringify(data));
+
+    } catch (err) {
+        // respond with error for invalid request
+        console.error(err);
+        res.status(500).send('Error retrieving data from MongoDB');
+    }
+});
+
+app.get("/prof/:id", async (req, res) => {
+    try {
+        // Connect the client to the server
+        let collection = db.collection("user");
+        let userId = req.params.id;
+
+        // Retrieve the massive amount of data from MongoDB
+        let dataComb = await collection.aggregate([
+            {
+                $match: {
+                    s_id: userId
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "advises",
+                    localField: "s_id",
+                    foreignField: "advisor_id",
+                    as: "advisesRefs"
+                }
+            },
+
+            {
+                $lookup: {
+                    from: "user",
+                    localField: "advisesRefs.advises_id",
+                    foreignField: "s_id",
+                    as: "advisees"
+                }
+            },
+        ])
+        
 
         let data = await dataComb.toArray();
     
@@ -266,22 +312,67 @@ app.put("/has_course/:_id", async (req, res) => {
 
 //Validate login credentials
 app.post("/login", async (req, res) => {
+    let isAuthenticated = false;
     //Get the user collection
     let users = db.collection("user");
 
     //Get the username and password from login form
-    let username = req.body.username;
-    let pass = req.body.pass;
+    let username = req.body.field1;
+    let pass = req.body.field2;
 
-    //Hash password to compare to database
-    let hashPass = bcrypt.hash(pass);
-    //This handles changes between the hashes the php script in proj4 made
-    //and the hashes this bcrypt library makes
-    hashPass = hashPass.replace("$2a$", "$2y$");
+    let query = {
+        username: username
+    }
+    let user = await users.find(query).toArray();
+    let hashPass = user[0].password;
+    let id = user[0].s_id;
+    let role = user[0].Role;
+    console.log(role);
 
-    //Query database to authenticate
-    let user = users.findOne({ username: username});
-    //suser.
+    if(bcrypt.compare(pass, hashPass)){
+        isAuthenticated = true;
+    }
+    else{
+        isAuthenticated = false;
+    }
+
+    res.cookie("id", id);
+    if(role == "Student"){
+        res.cookie("isAuthenticated", isAuthenticated).redirect("http://localhost:3000/student");
+    }
+    else if (role == "Advisor"){
+        res.cookie("isAuthenticated", isAuthenticated).redirect("http://localhost:3000/professor");
+    }
+})
+
+app.post("/create", async (req, res) => {
+    console.log("in create");
+    //Get the user collection
+    let users = db.collection("user");
+
+    //Get user info from createUser form
+    let fname = req.body.field1;
+    let lname = req.body.field2;
+    let id = req.body.field3;
+    let isMale = req.body.field4;
+    let catYear = req.body.field5;
+    let username = req.body.field6;
+    let password = req.body.field7;
+
+    let query = {
+        s_id: id,
+        first_name: fname,
+        last_name: lname,
+        is_male: isMale,
+        catalog_year: catYear,
+        username: username,
+        password: password,
+        savior: "Jesus",
+        Role: "Student"
+    }
+    console.log("before insert");
+    const result = await users.insertOne(query);
+    res.redirect("http://localhost:3000/login");
 
 })
 
@@ -290,5 +381,3 @@ const port = 3001;
 app.listen(port, () => {
     console.log("server running");
 });
-
-  
