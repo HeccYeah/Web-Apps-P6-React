@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -266,6 +267,8 @@ app.put("/has_course/:_id", async (req, res) => {
 
 //Validate login credentials
 app.post("/login", async (req, res) => {
+    console.log("in api")
+    let isAuthenticated = false;
     //Get the user collection
     let users = db.collection("user");
 
@@ -273,15 +276,30 @@ app.post("/login", async (req, res) => {
     let username = req.body.username;
     let pass = req.body.pass;
 
+    console.log("Username: " + username);
+    console.log("Password: " + pass);
+
     //Hash password to compare to database
-    let hashPass = bcrypt.hash(pass);
+    
     //This handles changes between the hashes the php script in proj4 made
     //and the hashes this bcrypt library makes
-    hashPass = hashPass.replace("$2a$", "$2y$");
+    //hashPass = hashPass.replace("$2a$", "$2y$");
 
     //Query database to authenticate
-    let user = users.findOne({ username: username});
-    //suser.
+    let query = {
+        username: username
+    }
+    let user = await users.find(query).toArray();
+    let hashPass = user[0].password;
+
+    if(bcrypt.compare(pass, hashPass)){
+        isAuthenticated = true;
+    }
+    else{
+        isAuthenticated = false;
+    }
+
+    res.cookie("isAuthenticated", "true").redirect("http://localhost:3000/student");
 
 })
 
