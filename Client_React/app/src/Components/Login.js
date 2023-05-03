@@ -14,4 +14,27 @@ function Login () {
     )
 }
 
+async function authenticate () {
+    alert("init")
+    let username = document.getElementById("username").value;
+    let pass = document.getElementById("pass").value;
+
+    let details = {
+        username: username,
+        password: pass
+    }
+
+    let requestOptions = {
+        method: "POST",
+        body: details,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
+
+    let response = await fetch("http://localhost:3001/login", requestOptions);
+    let auth = await response.json();
+    console.log(auth);
+}
+
 export default Login;

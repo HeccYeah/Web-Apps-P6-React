@@ -183,7 +183,7 @@ async function getData()
 {
     // Get data from server
     // get data
-    let id = document.cookie.replace(/(?:(?:^|.*;\s*)id\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+    let id = '1'; //MAKE THIS FROM AUTHENTICATION!!!!!!
 
     let response = await fetch(`http://localhost:3001/users/${id}`)
     let respJson = await response.json();
@@ -589,12 +589,13 @@ async function getData()
         });
     });
 
+    // TODO, FIX LOGOUT FUNCTIONALITY
+    /*
     // Event listener for logout button
     $("#logout").click(function (){
-        document.cookie = "isAuthenticated= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-        document.cookie = "id= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
-        window.location.href = "http://localhost:3000/";
+        document.location = "Identity/Account/Logout";
     });
+    */
 
     // refresh drag and drop functionality
     refreshDAD();
