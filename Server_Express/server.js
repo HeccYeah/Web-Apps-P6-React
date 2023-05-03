@@ -263,14 +263,13 @@ app.put("/has_course/:_id", async (req, res) => {
 
 //Validate login credentials
 app.post("/login", async (req, res) => {
-    console.log("in api")
     let isAuthenticated = false;
     //Get the user collection
     let users = db.collection("user");
 
     //Get the username and password from login form
-    let username = req.body.username;
-    let pass = req.body.pass;
+    let username = req.body.field1;
+    let pass = req.body.field2;
 
     //Query database to authenticate
     let query = {
@@ -289,6 +288,38 @@ app.post("/login", async (req, res) => {
 
     res.cookie("id", id);
     res.cookie("isAuthenticated", "true").redirect("http://localhost:3000/student");
+
+})
+
+app.post("/create", async (req, res) => {
+    console.log("in create");
+    //Get the user collection
+    let users = db.collection("user");
+
+    //Get user info from createUser form
+    let fname = req.body.field1;
+    let lname = req.body.field2;
+    let id = req.body.field3;
+    let isMale = req.body.field4;
+    let catYear = req.body.field5;
+    let username = req.body.field6;
+    let password = req.body.field7;
+
+    let query = {
+        s_id: id,
+        first_name: fname,
+        last_name: lname,
+        is_male: isMale,
+        catalog_year: catYear,
+        username: username,
+        password: password,
+        savior: "Jesus",
+        Role: Student
+    }
+    users.insertOne(query, function(err, result) {
+        assert.equal(null, err);
+        res.send("Insert success");
+    });
 
 })
 
