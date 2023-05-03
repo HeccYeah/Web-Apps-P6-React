@@ -95,7 +95,6 @@ button {
   border-color: #e9e7df;
   border-style: groove;
   border-radius: 5px;
-  color: #e9e7df;
   height: 3.5vh;
   width: 5vw;
   font-size: 2.5vh;
@@ -104,10 +103,6 @@ button {
 
 button:hover {
   background-image: linear-gradient(to bottom right, #44406d, #2d5c86);
-}
-
-.plan-button{
-  width: 100%;
 }
 
 #bannerStudent {
@@ -248,11 +243,6 @@ button:hover {
 #gridC li:hover {
   background-color: rgba(0,0,0,0.1);
   cursor: pointer;
-}
-
-#noteSubmitter{
-  width: 10vw;
-  margin-left: 2vw;
 }
 
 div li:hover {

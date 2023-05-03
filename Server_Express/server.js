@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -217,29 +218,25 @@ app.delete("/plan_year/:p_id/:year", async (req, res) => {
 
 // insert a new note for a plan into the database
 app.post("/note", async (req, res) => {
-    try {
-        let newNote = {
-            p_id: req.body.p_id,
-            creatorID: req.body.creatorID,
-            note: req.body.note
-        };
+    let newNote = {
+        n_id: req.body.n_id,
+        p_id: req.body.p_id,
+        creatorID: req.body.creatorID,
+        note: req.body.note
+    };
 
-        let collection = db.collection("note");
+    let collection = db.collection("note");
 
-        const result = await collection.insertOne(newNote);
-        res.send(result.insertedId);
-    } catch (err) {
-        console.error('Error inserting document:', err);
-        res.status(500).send('Internal Server Error');
-    }
+    collection.insertOne(newNote, function(err, result) {
+        assert.equal(null, err);
+        res.send("Success");
+    });
 });
 
 // delete a note from a plan in the database
-app.delete("/note/:_id", async (req, res) => {
-    let idObj = new mongodb.ObjectId(req.params._id);
-
+app.delete("/note/:n_id", async (req, res) => {
     let query = {
-        _id: idObj
+        n_id: req.params.n_id,
     };
 
     let collection = db.collection("note");
@@ -253,7 +250,7 @@ app.delete("/note/:_id", async (req, res) => {
 // insert a new course for a plan into the database
 app.post("/has_course", async (req, res) => {
     try {
-        let newHasCourse = {
+        let newNote = {
             p_id: req.body.p_id,
             c_id: req.body.c_id,
             sem: req.body.sem,
@@ -263,7 +260,7 @@ app.post("/has_course", async (req, res) => {
 
         let collection = db.collection("has_course");
 
-        const result = await collection.insertOne(newHasCourse);
+        const result = await collection.insertOne(newNote);
         res.send(result.insertedId);
     } catch (err) {
         console.error('Error inserting document:', err);

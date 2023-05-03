@@ -9,7 +9,6 @@ class Plan
     {
         this.name = name; 
         this.courses = courses;
-        this.notes = [];
     }
 
     makeYears(yearArray)

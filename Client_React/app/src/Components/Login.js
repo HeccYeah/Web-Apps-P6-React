@@ -8,6 +8,7 @@ function Login () {
                 <label><span> </span><input type="submit" value="Login" /></label>
             </form>
             <form action="http://localhost:3000/create">
+            <form action="http://localhost:3000/create">
                 <label><span> </span><input type="submit" value="Create New User" /></label>
             </form>
         </div>
