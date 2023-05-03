@@ -272,21 +272,13 @@ app.post("/login", async (req, res) => {
     let username = req.body.username;
     let pass = req.body.pass;
 
-    console.log("Username: " + username);
-    console.log("Password: " + pass);
-
-    //Hash password to compare to database
-    
-    //This handles changes between the hashes the php script in proj4 made
-    //and the hashes this bcrypt library makes
-    //hashPass = hashPass.replace("$2a$", "$2y$");
-
     //Query database to authenticate
     let query = {
         username: username
     }
     let user = await users.find(query).toArray();
     let hashPass = user[0].password;
+    let id = user[0].s_id;
 
     if(bcrypt.compare(pass, hashPass)){
         isAuthenticated = true;
@@ -295,6 +287,7 @@ app.post("/login", async (req, res) => {
         isAuthenticated = false;
     }
 
+    res.cookie("id", id);
     res.cookie("isAuthenticated", "true").redirect("http://localhost:3000/student");
 
 })
