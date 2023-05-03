@@ -9,6 +9,7 @@ class Plan
     {
         this.name = name; 
         this.courses = courses;
+        this.notes = [];
     }
 
     makeYears(yearArray)
@@ -184,6 +185,7 @@ async function getData()
     // Get data from server
     // get data
     let id = '1'; //MAKE THIS FROM AUTHENTICATION!!!!!!
+    let role = "Student";
 
     let response = await fetch(`http://localhost:3001/users/${id}`)
     let respJson = await response.json();
@@ -197,13 +199,32 @@ async function getData()
     let minorsList = programsList.filter(p => p.is_minor == "1");
 
     let planList = respObj.plans;
-
     let yearList = respObj.plan_years;
-    let planYears = new Array();
-    yearList.forEach(yr => {
-        planYears.push(yr.year);
+    let notesList = respObj.plan_notes;
+
+    let planVals = new Map();
+    planList.forEach(p => {
+        let years = new Array();
+        yearList.forEach(yr => {
+            if (yr.p_id == p.p_id)
+            {
+                years.push(yr.year);
+            }
+        });
+        years = years.sort((a, b) => a - b);
+        let notes = new Array();
+        notesList.forEach(n => {
+            if (n.p_id == p.p_id && (role == "Advisor" || n.creatorID == id))
+            {
+                
+                notes.push(n)
+            }
+        });
+        planVals.set(p.p_id, {
+            years: years,
+            notes: notes,
+        });
     });
-    planYears = planYears.sort((a, b) => a - b);
 
     let reqList = new Array();
     respObj.reqs.forEach(r => {
@@ -326,7 +347,7 @@ async function getData()
         myPlan.name = planData.p_name;
 
         // reorganize plan object
-        myPlan.makeYears(planYears);
+        myPlan.makeYears(planVals.get(planSelector.value).years);
 
         // store plan for later
         plans[parseInt(planData.p_id)] = myPlan;
@@ -411,8 +432,10 @@ async function getData()
         // ADD buttons to add and drop years
         let addYearButt = document.createElement("button");
         addYearButt.textContent = "Add Year";
+        addYearButt.classList.add("plan-button");
         addYearButt.addEventListener("click", () => {
             let p_id = planSelector.value;
+            let planYears = planVals.get(planSelector.value).years;
             let lastYear = planYears[planYears.length - 1];
             let newYear = parseInt(lastYear) + 1;
 
@@ -433,9 +456,9 @@ async function getData()
 
             fetch("http://localhost:3001/plan_year/", requestOptions)
 
-            planYears.push(newYear + "");
+            planVals.get(planSelector.value).years.push(newYear + "");
 
-            plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+            plans[planSelector.value].makeYears(planVals.get(planSelector.value).years); // reconstruct back-end data
             planPop(); // Probably a more efficient way to do this, but it should work
 
         });
@@ -443,9 +466,10 @@ async function getData()
 
         let delYearButt = document.createElement("button");
         delYearButt.textContent = "Delete Year";
+        delYearButt.classList.add("plan-button");
         delYearButt.addEventListener("click", () => {
             let p_id = planSelector.value;
-            let lastYear = planYears.pop();
+            let lastYear = planVals.get(planSelector.value).years.pop();
 
             // delete all courses in the year
             let currPlan = plans[p_id];
@@ -471,7 +495,7 @@ async function getData()
 
             fetch("http://localhost:3001/plan_year/" + p_id + "/" + lastYear, requestOptions)
 
-            plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+            plans[planSelector.value].makeYears(planVals.get(planSelector.value).years); // reconstruct back-end data
             planPop(); // Probably a more efficient way to do this, but it should work
         });
         gridElem.appendChild(delYearButt);
@@ -641,7 +665,7 @@ async function getData()
                         fetch("http://localhost:3001/has_course/" + refNum, requestOptions);
 
                         // restructure js objects
-                        plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+                        plans[planSelector.value].makeYears(planVals.get(planSelector.value).years); // reconstruct back-end data
                         planPop(); // Probably a more efficient way to do this, but it should work
                         polka();
                     }
@@ -682,7 +706,7 @@ async function getData()
                         let currCourse = plans[planSelector.value].courses.find(crs => crs.hasCourseId == refNum);
                         currCourse.semester = sem;
                         currCourse.year = year;
-                        plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+                        plans[planSelector.value].makeYears(planVals.get(planSelector.value).years); // reconstruct back-end data
 
                         // update remote data
                         let updatedHasCourse = {
@@ -739,7 +763,7 @@ async function getData()
                                 // Update local values
                                 let newCourseID = data;
                                 plans[planSelector.value].courses.push(new Course(cData[0], currCourseObj.course_name, year, sem, parseInt(currCourseObj.credit_hours), newCourseID));
-                                plans[planSelector.value].makeYears(planYears); // reconstruct back-end data
+                                plans[planSelector.value].makeYears(planVals.get(planSelector.value).years); // reconstruct back-end data
                                 planPop(); // Probably a more efficient way to do this, but it should work
                                 polka();
                             })
@@ -751,6 +775,84 @@ async function getData()
                 }
             });
         });
+    }
+
+    // handle notes and notes form
+    let noteInput = document.getElementById("noteWriter");
+    let noteSubmit = document.getElementById("noteSubmitter");
+    noteSubmit.addEventListener("click", () => {
+        let newNote = {
+            note: noteInput.value,
+            creatorID: id,
+            p_id: planSelector.value,
+        }
+
+        let jsonNewNote = JSON.stringify(newNote);
+
+        let requestOptions = {
+            method: "POST",
+            body: jsonNewNote,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+
+        fetch("http://localhost:3001/note/", requestOptions)
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // this returns a promise
+                } else {
+                    throw new Error('Error inserting document into database.');
+                }
+            })
+            .then(data => {
+                // Update local values
+                let newNoteID = data;
+                planVals.get(planSelector.value).notes.push({
+                    _id: newNoteID,
+                    note: noteInput.value,
+                    creatorID: id,
+                    p_id: planSelector.value,
+                });
+                notesPop();
+            })
+            .catch(error => {
+                console.error('Error inserting document into database:', error);
+            });
+    });
+
+    notesPop()
+
+    function notesPop()
+    {
+        let pNotes = planVals.get(planSelector.value).notes;
+
+        let noteDisplay = document.getElementById("noteList");
+
+        pNotes.forEach(n => {
+            let noteEntry = document.createElement("li");
+            noteEntry.textContent = n.note;
+            noteDisplay.appendChild(noteEntry);
+
+            let delButton = document.createElement("button");
+            delButton.textContent = "X";
+            delButton.classList.add("delButton");
+            delButton.addEventListener("click", () =>
+            {
+                let refNum = n._id;
+
+                // update the database
+                let requestOptions = {
+                    method: "DELETE",
+                };
+
+                fetch("http://localhost:3001/note/" + refNum, requestOptions);
+
+                planVals.get(planSelector.value).notes = planVals.get(planSelector.value).notes.filter(n => n._id != refNum);
+                notesPop();
+            });
+            noteEntry.appendChild(delButton);
+        })
     }
 }
 

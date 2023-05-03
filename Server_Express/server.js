@@ -171,25 +171,29 @@ app.delete("/plan_year/:p_id/:year", async (req, res) => {
 
 // insert a new note for a plan into the database
 app.post("/note", async (req, res) => {
-    let newNote = {
-        n_id: req.body.n_id,
-        p_id: req.body.p_id,
-        creatorID: req.body.creatorID,
-        note: req.body.note
-    };
+    try {
+        let newNote = {
+            p_id: req.body.p_id,
+            creatorID: req.body.creatorID,
+            note: req.body.note
+        };
 
-    let collection = db.collection("note");
+        let collection = db.collection("note");
 
-    collection.insertOne(newNote, function(err, result) {
-        assert.equal(null, err);
-        res.send("Success");
-    });
+        const result = await collection.insertOne(newNote);
+        res.send(result.insertedId);
+    } catch (err) {
+        console.error('Error inserting document:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // delete a note from a plan in the database
-app.delete("/note/:n_id", async (req, res) => {
+app.delete("/note/:_id", async (req, res) => {
+    let idObj = new mongodb.ObjectId(req.params._id);
+
     let query = {
-        n_id: req.params.n_id,
+        _id: idObj
     };
 
     let collection = db.collection("note");
@@ -203,7 +207,7 @@ app.delete("/note/:n_id", async (req, res) => {
 // insert a new course for a plan into the database
 app.post("/has_course", async (req, res) => {
     try {
-        let newNote = {
+        let newHasCourse = {
             p_id: req.body.p_id,
             c_id: req.body.c_id,
             sem: req.body.sem,
@@ -213,7 +217,7 @@ app.post("/has_course", async (req, res) => {
 
         let collection = db.collection("has_course");
 
-        const result = await collection.insertOne(newNote);
+        const result = await collection.insertOne(newHasCourse);
         res.send(result.insertedId);
     } catch (err) {
         console.error('Error inserting document:', err);

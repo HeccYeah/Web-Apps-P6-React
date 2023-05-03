@@ -1,5 +1,3 @@
-import Notes from './Notes';
-
 function ClassTable() {
     return (
         <div id="finder" className="quadrant">
